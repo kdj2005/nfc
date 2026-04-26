@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Dashboard | FastMenu</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Lexend:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <style>
+    :root {
+      --sidebar-width: 280px;
+      --primary: #f97316;
+      --primary-soft: #ffedd5;
+      --bg-main: #f1f5f9;
+      --text-dark: #0f172a;
+      --text-gray: #64748b;
+      --radius: 12px;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: var(--bg-main); font-family: 'Inter', sans-serif; color: var(--text-dark); display: flex; height: 100vh; overflow: hidden; }
+
+    /* SIDEBAR */
+    aside {
+      width: var(--sidebar-width);
+      background: white;
+      border-right: 1px solid #e2e8f0;
+      display: flex;
+      flex-direction: column;
+      padding: 1.5rem;
+      z-index: 10;
+    }
+
+    .logo {
+      font-family: 'Lexend', sans-serif;
+      font-size: 1.4rem;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 2.5rem;
+    }
+
+    .nav-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-gray);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 1rem;
+    }
+
+    .cat-list { overflow-y: auto; flex-grow: 1; margin-bottom: 1rem; }
+    
+    .cat-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 12px;
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-bottom: 4px;
+      color: var(--text-gray);
+      font-weight: 500;
+    }
+
+    .cat-item:hover { background: #f8fafc; color: var(--text-dark); }
+    .cat-item.active { background: var(--primary-soft); color: var(--primary); }
+
+    /* BOUTON AJOUTER CATEGORIE */
+    .btn-add-cat {
+      width: 100%;
+      padding: 10px;
+      border-radius: var(--radius);
+      border: 1px dashed #cbd5e1;
+      background: #f8fafc;
+      color: var(--text-gray);
+      cursor: pointer;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: 0.2s;
+    }
+    .btn-add-cat:hover { border-color: var(--primary); color: var(--primary); background: white; }
+
+    /* MAIN CONTENT */
+    main {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      padding: 2rem;
+    }
+
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+
+    .welcome-text h1 { font-family: 'Lexend'; font-size: 1.8rem; }
+    .welcome-text p { color: var(--text-gray); }
+
+    .action-group { display: flex; gap: 1rem; align-items: center; }
+
+    .search-box {
+      background: white;
+      border: 1px solid #e2e8f0;
+      padding: 8px 16px;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 250px;
+    }
+    .search-box input { border: none; outline: none; width: 100%; font-size: 0.9rem; }
+
+    /* PRODUCT CARDS */
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .product-card {
+      background: white;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid #e2e8f0;
+      transition: all 0.3s;
+    }
+    .product-card:hover { transform: translateY(-5px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
+    .product-img { width: 100%; height: 160px; object-fit: cover; }
+    .product-details { padding: 1.2rem; }
+    .product-category { font-size: 0.75rem; color: var(--primary); font-weight: 600; text-transform: uppercase; margin-bottom: 4px; }
+    .product-name { font-family: 'Lexend', sans-serif; font-size: 1.1rem; margin-bottom: 8px; }
+    .price-tag { font-weight: 700; font-size: 1.1rem; color: var(--text-dark); }
+
+    /* MODAL */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(15, 23, 42, 0.7);
+      backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 100;
+    }
+    .modal-card { background: white; width: 450px; border-radius: 24px; padding: 2rem; }
+    .form-input { width: 100%; padding: 12px; border-radius: var(--radius); border: 1px solid #e2e8f0; margin-top: 5px; outline: none; }
+    .btn { padding: 12px 24px; border-radius: var(--radius); font-weight: 600; cursor: pointer; border: none; transition: 0.2s; }
+    .btn-primary { background: var(--primary); color: white; }
+
+  </style>
+</head>
+<body>
+
+  <aside>
+    <div class="logo">
+      <i class="fas fa-chart-pie"></i>
+      <span>My Dashboard</span>
+    </div>
+
+    <nav>
+      <p class="nav-label">Menu</p>
+      <div class="cat-item active" onclick="selectCat(null)">
+        <span>Tous les produits</span>
+      </div>
+      
+      <p class="nav-label" style="margin-top: 2rem;">Catégories</p>
+      <div id="catList" class="cat-list"></div>
+
+      <button class="btn-add-cat" onclick="promptCategory()">
+        <i class="fas fa-plus-circle"></i> Ajouter une catégorie
+      </button>
+    </nav>
+  </aside>
+
+  <main>
+    <div class="top-bar">
+      <div class="welcome-text">
+        <h1>Welcome Manager 👋</h1>
+        <p>Gérez votre carte et vos produits en un clic.</p>
+      </div>
+      
+      <div class="action-group">
+        <div class="search-box">
+          <i class="fas fa-search" style="color: #94a3b8;"></i>
+          <input type="text" placeholder="Rechercher...">
+        </div>
+        <button class="btn btn-primary" onclick="openModal()">
+          <i class="fas fa-plus"></i> Produit
+        </button>
+      </div>
+    </div>
+
+    <h2 id="viewTitle" style="font-family: 'Lexend'; margin-bottom: 1.5rem;">Tous les produits</h2>
+    
+    <div class="products-grid" id="productsGrid"></div>
+  </main>
+
+  <div class="modal-overlay" id="productModal">
+    <div class="modal-card">
+      <h2 style="font-family:'Lexend'; margin-bottom: 1.5rem;">Nouveau Produit</h2>
+      
+      <div style="margin-bottom: 1rem;">
+        <label style="font-size: 0.8rem; font-weight: 600; color: var(--text-gray);">NOM DU PLAT</label>
+        <input type="text" id="mName" class="form-input" placeholder="Ex: Pizza Regina">
+      </div>
+
+      <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+        <div style="flex: 1;">
+          <label style="font-size: 0.8rem; font-weight: 600; color: var(--text-gray);">PRIX (€)</label>
+          <input type="number" id="mPrice" class="form-input" placeholder="0.00">
+        </div>
+        <div style="flex: 1;">
+          <label style="font-size: 0.8rem; font-weight: 600; color: var(--text-gray);">CATÉGORIE</label>
+          <select id="mCat" class="form-input"></select>
+        </div>
+      </div>
+
+      <div style="margin-bottom: 1rem;">
+        <label style="font-size: 0.8rem; font-weight: 600; color: var(--text-gray);">IMAGE DU PRODUIT</label>
+        <input type="file" id="mImage" class="form-input" accept="image/*">
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 1rem;">
+        <button class="btn" style="background:#f1f5f9;" onclick="closeModal()">Annuler</button>
+        <button class="btn btn-primary" onclick="saveProduct()">Enregistrer</button>
+      </div>
+    </div>
+  </div>
+
+ 
+ 
+<script>
+    // L'adresse de ton serveur
+    const adresse_serveur = window.location.origin;
+    
+    // On cible les zones d'affichage
+    const grille_produits = document.getElementById('productsGrid');
+    const liste_deroulante_cat = document.getElementById('mCat');
+    const menu_categories = document.getElementById('catList');
+    const titre_vue = document.getElementById('viewTitle');
+
+    // Variables globales
+    let liste_produits = [];
+    let liste_categories = [];
+    let categorie_active = null;
+
+    // --- 1. CHARGER LES DONNÉES DU SERVEUR ---
+    async function rafraichirDonnees() {
+        try {
+            // On récupère les catégories
+            const reponse_cat = await fetch(adresse_serveur + '/categories/getAll-categories', { credentials: 'include' });
+            const data_cat = await reponse_cat.json();
+            
+            // On récupère les produits
+            const reponse_prod = await fetch(adresse_serveur + '/produits/getAll-produits', { credentials: 'include' });
+            const data_prod = await reponse_prod.json();
+
+            liste_produits = data_prod.produits || [];
+            liste_categories = data_cat.categories || [];
+
+            // On met à jour l'affichage
+            afficherMenuEtFormulaire(liste_categories);
+            selectCat(categorie_active); // Afficher selon la catégorie active
+
+        } catch (erreur) {
+            console.error("Erreur lors du chargement :", erreur);
+        }
+    }
+
+    // --- 2. REMPLIR LE MENU ET LA LISTE DE SÉLECTION ---
+    function afficherMenuEtFormulaire(liste) {
+        let code_menu = "";
+        let code_selection = "";
+
+        for (let une_cat of liste) {
+            // Pour le menu à gauche
+            const isActive = categorie_active === une_cat._id ? 'active' : '';
+            code_menu += `
+                <div class="cat-item ${isActive}" data-id="${une_cat._id}" onclick="selectCat('${une_cat._id}')">
+                    <span>${une_cat.name}</span>
+                </div>`;
+            
+            // Pour le choix dans la fenêtre "Nouveau Produit"
+            code_selection += `<option value="${une_cat._id}">${une_cat.name}</option>`;
+        }
+
+        menu_categories.innerHTML = code_menu;
+        liste_deroulante_cat.innerHTML = code_selection;
+    }
+
+    // --- 3. AFFICHER LES PRODUITS ---
+    function afficherLaGrille(liste) {
+        let code_html = "";
+
+        for (let p of liste) {
+            code_html += `
+                <div class="product-card">
+                    <img src="${p.image}" class="product-img">
+                    <div class="product-details">
+                        <p class="product-category">${p.categories?.name || 'Sans catégorie'}</p>
+                        <h3 class="product-name">${p.noms}</h3>
+                        <span class="price-tag">${p.prix.toFixed(2)} €</span>
+                    </div>
+                </div>`;
+        }
+        grille_produits.innerHTML = code_html;
+    }
+
+    // --- 4. SÉLECTIONNER UNE CATÉGORIE ---
+    function selectCat(id) {
+        categorie_active = id;
+        
+        // Mettre à jour la classe active
+        const items = document.querySelectorAll('.cat-item');
+        items.forEach(item => item.classList.remove('active'));
+        
+        if (id === null) {
+            // Activer "Tous les produits"
+            const allItem = document.querySelector('.cat-item:not([data-id])');
+            if (allItem) allItem.classList.add('active');
+            titre_vue.textContent = 'Tous les produits';
+            afficherLaGrille(liste_produits);
+        } else {
+            // Activer la catégorie sélectionnée
+            const catItem = document.querySelector(`.cat-item[data-id="${id}"]`);
+            if (catItem) catItem.classList.add('active');
+            
+            // Filtrer les produits
+            const produits_filtres = liste_produits.filter(p => p.categories && p.categories._id === id);
+            const catName = liste_categories.find(c => c._id === id)?.name || 'Catégorie';
+            titre_vue.textContent = `Produits - ${catName}`;
+            afficherLaGrille(produits_filtres);
+        }
+    }
+
+    // --- 4. CRÉER UNE NOUVELLE CATÉGORIE ---
+    async function promptCategory() {
+        const nom = prompt("Nom de la catégorie :");
+        if (!nom) return;
+
+        await fetch(adresse_serveur + '/categories/create-categories', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ name: nom })
+        });
+
+        rafraichirDonnees();
+    }
+
+    // --- 5. ENREGISTRER UN NOUVEAU PRODUIT ---
+    async function saveProduct() {
+        const nom = document.getElementById('mName').value;
+        const prix = document.getElementById('mPrice').value;
+        const categorie_id = document.getElementById('mCat').value;
+        const fichier_image = document.getElementById('mImage').files[0];
+
+        if (!nom || !prix || !fichier_image) {
+            alert("Merci de remplir tous les champs !");
+            return;
+        }
+
+        // Préparation des données (avec l'image)
+        const infos_produit = new FormData();
+        infos_produit.append('nom', nom);
+        infos_produit.append('prix', prix);
+        infos_produit.append('category', categorie_id);
+        infos_produit.append('image', fichier_image);
+       
+
+        const retour = await fetch(adresse_serveur + '/produits/create-produits', {
+            method: 'POST',
+            credentials: 'include',
+            body: infos_produit
+        });
+
+        if (retour.ok) {
+            closeModal();
+            rafraichirDonnees();
+        } else {
+            alert(retour.message || "Taille de l'image trop grande (max 10485760 octets).");
+        }
+    }
+
+    // Fonctions pour ouvrir/fermer la fenêtre
+    function openModal() { document.getElementById('productModal').style.display = 'flex'; }
+    function closeModal() { document.getElementById('productModal').style.display = 'none'; }
+
+    // On lance tout au chargement
+    rafraichirDonnees();
+</script>
+</body>
+</html>

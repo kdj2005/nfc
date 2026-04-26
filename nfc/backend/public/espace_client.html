@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Bank | Tableau de bord</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #f5f7fa; color: #1e293b; }
+        .entete { background: white; border-bottom: 1px solid #eef2f6; padding: 0 32px; height: 72px; display: flex; align-items: center; justify-content: center; }
+        .entete-interne { width: 100%; max-width: 1280px; display: flex; justify-content: space-between; align-items: center; }
+        .logo { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 20px; color: #0a2b5e; }
+        .logo-icone { width: 40px; height: 40px; background: linear-gradient(135deg, #0066ff 0%, #0a2b5e 100%); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; }
+        .infos-utilisateur { display: flex; align-items: center; gap: 12px; }
+        .avatar-utilisateur { width: 42px; height: 42px; background: linear-gradient(135deg, #0066ff 0%, #0a2b5e 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; }
+        .contenu-principal { max-width: 1280px; margin: 0 auto; padding: 40px 32px; }
+        .section-bienvenue { margin-bottom: 40px; }
+        .section-bienvenue h1 { font-size: 32px; color: #0a2b5e; margin-bottom: 8px; }
+        .grille-cartes { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 40px; }
+        .carte-solde { background: linear-gradient(135deg, #0066ff 0%, #0a2b5e 100%); border-radius: 20px; padding: 32px; color: white; box-shadow: 0 4px 16px rgba(0, 102, 255, 0.15); }
+        .etiquette-solde { font-size: 13px; opacity: 0.7; margin-bottom: 12px; }
+        .montant-solde { font-size: 48px; font-weight: 800; }
+        .carte-actions { background: white; border-radius: 20px; padding: 32px; border: 1px solid #e5e7eb; }
+        .titre-actions { font-weight: 600; color: #0a2b5e; margin-bottom: 24px; display: flex; align-items: center; gap: 8px; }
+        .groupe-saisie { margin-bottom: 20px; }
+        input { width: 100%; padding: 14px; border-radius: 12px; border: 1.5px solid #e2e8f0; font-size: 16px; outline: none; }
+        .bouton-depot { width: 100%; background: linear-gradient(135deg, #0066ff 0%, #0a2b5e 100%); color: white; border: none; padding: 14px; border-radius: 12px; font-weight: 600; cursor: pointer; }
+        .section-quitter { text-align: center; }
+        .bouton-quitter { background: transparent; border: 1px solid #e2e8f0; padding: 12px 28px; border-radius: 12px; color: #e53e3e; font-weight: 500; cursor: pointer; }
+        @media (max-width: 768px) { .grille-cartes { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+
+    <header class="entete">
+        <div class="entete-interne">
+            <div class="logo">
+                <div class="logo-icone">MB</div>
+                <span>My Bank</span>
+            </div>
+            <div class="infos-utilisateur">
+                <div style="text-align: right">
+                    <div id="nomUtilisateur" style="font-weight: 600; font-size: 14px;">Chargement...</div>
+                    <div style="font-size: 11px; color: #2d7a4b;">Compte actif</div>
+                </div>
+                <div class="avatar-utilisateur" id="avatarUtilisateur">--</div>
+            </div>
+        </div>
+    </header>
+
+    <main class="contenu-principal">
+        <div class="section-bienvenue">
+            <h1>Bonjour <span id="prenomUtilisateur">...</span></h1>
+            <p>Voici le récapitulatif de votre compte</p>
+        </div>
+
+        <div class="grille-cartes">
+            <div class="carte-solde">
+                <div class="etiquette-solde">SOLDE DISPONIBLE</div>
+                <div class="montant-solde" id="montantAffichage">
+                    0,00 <small style="font-size: 20px;">€</small>
+                </div>
+            </div>
+
+            <div class="carte-actions">
+                <div class="titre-actions">
+                    <i class="fas fa-bolt"></i> Actions rapides
+                </div>
+                <div class="groupe-saisie">
+                    <input type="number" id="champMontant" placeholder="Montant en €">
+                </div>
+                <button class="bouton-depot" id="boutonConfirmerDepot">
+                    Effectuer un dépôt
+                </button>
+            </div>
+        </div>
+
+        <div class="section-quitter">
+            <button class="bouton-quitter" id="boutonDeconnexion">
+                <i class="fas fa-sign-out-alt"></i> Me déconnecter
+            </button>
+        </div>
+    </main>
+
+    <script>
+        const api = window.location.origin;
+        const prenomUtilisateur = document.getElementById('prenomUtilisateur');
+        const nomUtilisateur = document.getElementById('nomUtilisateur');
+        const avatarUtilisateur = document.getElementById('avatarUtilisateur');
+        const montantAffichage = document.getElementById('montantAffichage');
+        const boutonConfirmerDepot = document.getElementById('boutonConfirmerDepot');
+        const boutonDeconnexion = document.getElementById('boutonDeconnexion');
+
+        async function fetchwithrefresh(url, options = {}) {
+            try {
+                let response = await fetch(url, { ...options, credentials: "include" });
+                
+                if (response.status === 401) {
+                    const refresh = await fetch(`${api}/user/refresh-token`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        credentials: "include"
+                    });
+
+                    if (refresh.ok) {
+                        return await fetch(url, { ...options, credentials: "include" });
+                    } else {
+                        window.location.href = '/connexion';
+                        return null;
+                    }
+                }
+                return response;
+            } catch (error) {
+                console.error('Erreur réseau détectée:', error.message);
+                window.location.href = '/connexion'; // Force la redirection si le serveur est injoignable
+                return null;
+            }
+        }
+
+        async function chargerInformationsUtilisateur() {
+            try {
+                const reponse = await fetchwithrefresh(`${api}/user/userinfo`, {
+                    method: "GET",
+                    headers: { "Content-Type": "application/json" }
+                });
+
+                if (reponse && reponse.ok) {
+                    const utilisateur = await reponse.json();
+                    console.log('Données utilisateur chargées:', utilisateur);
+                    
+                    // Mise à jour de l'interface
+                    prenomUtilisateur.textContent = utilisateur.data.name || "Client";
+                    nomUtilisateur.textContent = utilisateur.data.surname || "";
+                    
+                    // Calcul sécurisé des initiales
+                    const initName = utilisateur.data.name ? utilisateur.data.name.charAt(0) : '?';
+                    const initSurname = utilisateur.data.surname ? utilisateur.data.surname.charAt(0) : '';
+                    avatarUtilisateur.textContent = (initName + initSurname).toUpperCase();
+                    
+                    montantAffichage.innerHTML = `${utilisateur.data.solde.toFixed(2)} <small style="font-size: 20px;">€</small>`;
+                } else if (reponse) {
+                    // Si on a une réponse mais qu'elle n'est pas "ok" (ex: 403, 500)
+                    window.location.href = '/connexion';
+                }
+            } catch (error) {
+                console.error('Erreur au chargement des données:', error);
+                window.location.href = '/connexion';
+            }
+        }
+
+        async function fairedepot() {
+            const montant = parseFloat(document.getElementById('champMontant').value);
+            if (isNaN(montant) || montant <= 0) {
+                alert("Veuillez saisir un montant valide.");
+                return;
+            }
+
+            try {
+                const reponse = await fetchwithrefresh(`${api}/user/depot`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ amount: montant })
+                });
+
+                if (reponse && reponse.ok) {
+                    alert("Dépôt effectué avec succès !");
+                    document.getElementById('champMontant').value = ''; // Vide le champ
+                    chargerInformationsUtilisateur();
+                } else if (reponse) {
+                    const resultat = await reponse.json();
+                    alert(resultat.message || "Une erreur est survenue lors du dépôt.");
+                }
+            } catch (error) {
+                console.error('Erreur lors du dépôt:', error);
+            }
+        }
+
+        async function deconnecter() {
+            try {
+                const reponse = await fetch(`${api}/user/logout`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    credentials: "include"
+                });
+                window.location.href = '/connexion';
+            } catch (error) {
+                console.error('Erreur lors de la déconnexion:', error);
+                window.location.href = '/connexion';
+            }
+        }
+
+        // Événements
+        boutonConfirmerDepot.addEventListener('click', fairedepot);
+        boutonDeconnexion.addEventListener('click', deconnecter);
+        document.addEventListener('DOMContentLoaded', chargerInformationsUtilisateur);
+    </script>
+</body>
+</html>

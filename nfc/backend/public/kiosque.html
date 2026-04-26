@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kiosque King Food</title>
+    <style>
+        :root { --red: #cc0000; --dark: #333; --bg: #f4f4f4; --green: #28a745; --black-trans: rgba(0,0,0,0.6); }
+        body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin: 0; background: var(--bg); height: 100vh; overflow: hidden; color: #333; }
+        .hidden { display: none !important; }
+
+        /* --- NOUVEL ÉCRAN D'ACCUEIL ATTRACTIF --- */
+        #welcome { 
+            height: 100vh; 
+            width: 100%;
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center; 
+            cursor: pointer; 
+            text-align: center;
+            
+            /* Arrière-plan : Image de nourriture de haute qualité (Fullscreen) */
+            background-image: url('kiosque_background.png'); /* Remplacez par une image de votre choix */
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+
+        /* Voile sombre pour la lisibilité du texte */
+        #welcome::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.8) 100%);
+            z-index: 1;
+        }
+
+        /* Contenu de l'accueil (au-dessus du voile) */
+        .welcome-content {
+            position: relative;
+            z-index: 2;
+            color: white;
+            padding: 20px;
+        }
+
+        #welcome h1 { 
+            font-size: 4rem; /* Très grand */
+            font-weight: 900;
+            margin: 0 0 10px 0; 
+            text-transform: uppercase;
+            letter-spacing: -2px;
+            text-shadow: 2px 2px 10px rgba(0,0,0,0.5);
+        }
+
+        #welcome p { 
+            font-size: 1.5rem; 
+            margin: 0 0 40px 0;
+            font-weight: 300;
+            opacity: 0.9;
+        }
+
+        /* Nouveau "Bouton" d'action clignotant */
+        .start-btn {
+            background: var(--red);
+            padding: 20px 50px;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            animation: pulse-border 2s infinite;
+        }
+
+        @keyframes pulse-border {
+            0% { box-shadow: 0 0 0 0 rgba(204, 0, 0, 0.7); }
+            70% { box-shadow: 0 0 0 20px rgba(204, 0, 0, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(204, 0, 0, 0); }
+        }
+
+        /* --- FIN ACCUEIL --- */
+
+        /* --- LAYOUT PRINCIPAL (Inchangé) --- */
+        #main { display: grid; grid-template-columns: 140px 1fr 300px; height: 100vh; }
+        nav { background: white; border-right: 1px solid #ddd; }
+        .cat { padding: 20px 10px; text-align: center; cursor: pointer; font-size: 0.8rem; font-weight: bold; border-bottom: 1px solid #eee; }
+        .cat.active { background: var(--red); color: white; }
+
+        section { padding: 20px; overflow-y: auto; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; }
+        .card { background: white; padding: 15px; border-radius: 10px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); cursor: pointer; transition: transform 0.2s; }
+        .card:active { transform: scale(0.95); }
+        .card img { width: 100px; height: 100px; object-fit: contain; }
+        .card h3 { font-size: 0.9rem; margin: 10px 0; }
+        .card p { color: var(--red); font-weight: bold; margin: 0; }
+
+        aside { background: white; border-left: 1px solid #ddd; display: flex; flex-direction: column; }
+        .cart-title { padding: 15px; background: var(--dark); color: white; font-weight: bold; text-align: center;}
+        .list { flex: 1; padding: 15px; overflow-y: auto; font-size: 0.9rem; }
+        .item { display: flex; justify-content: space-between; margin-bottom: 8px; border-bottom: 1px solid #eee; padding-bottom: 5px; }
+        .footer { padding: 15px; border-top: 1px solid #ddd; background: #fafafa;}
+        .total { display: flex; justify-content: space-between; font-size: 1.4rem; font-weight: bold; margin-bottom: 15px; color: var(--dark); }
+        .btn { background: var(--red); color: white; border: none; width: 100%; padding: 18px; border-radius: 8px; font-size: 1.1rem; font-weight: bold; cursor: pointer; }
+
+        /* --- ÉCRAN PAIEMENT --- */
+        #pay-screen { position: fixed; inset: 0; background: white; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; z-index: 100; }
+        #pay-title { font-size: 2.5rem; color: var(--dark); margin-bottom: 10px;}
+        .contactless { width: 120px; height: 120px; margin-top: 40px; }
+        .anim-pulse { animation: pulse 1.5s infinite; }
+        
+        @keyframes pulse { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.1); opacity: 0.7; } 100% { transform: scale(1); opacity: 1; } }
+        
+        .status-msg { font-size: 1.4rem; margin-top: 15px; color: #555; font-weight: 300;}
+        .success-text { color: var(--green) !important; font-weight: bold; }
+        .error-text { color: var(--red) !important; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <div id="welcome" onclick="showMenu()">
+        <div class="welcome-content">
+            <p>UNE PETITE FAIM ?</p>
+            <h1>COMMANDEZ<br>ICI</h1>
+            <div style="margin-top: 50px;">
+                <span class="start-btn">Toucher pour commencer</span>
+            </div>
+        </div>
+    </div>
+
+    <div id="main" class="hidden">
+        <nav id="cats"></nav>
+        <section>
+            <h2 id="cat-name">Nos Produits</h2>
+            <div class="grid" id="grid"></div>
+        </section>
+        <aside>
+            <div class="cart-title">VOTRE COMMANDE</div>
+            <div class="list" id="list"></div>
+            <div class="footer">
+                <div class="total"><span>TOTAL</span><span id="total">0.00€</span></div>
+                <button class="btn" onclick="pay()">PAYER MA COMMANDE</button>
+            </div>
+        </aside>
+    </div>
+
+    <div id="pay-screen" class="hidden">
+        <h2 id="pay-title">PAIEMENT EN ATTENTE</h2>
+        <p id="pay-total" style="font-size: 3rem; font-weight: 900; color: var(--red); margin: 10px 0;"></p>
+        <p id="pay-instruction" class="status-msg">Veuillez approcher votre carte sur le lecteur</p>
+        <img id="pay-icon" class="contactless anim-pulse" src="lecteur.png">
+        <div id="cancel-area">
+             <button class="btn" style="width: auto; margin-top: 50px; background: #eee; color: #333; padding: 10px 30px;" onclick="reinitialiser()">Annuler</button>
+        </div>
+    </div>
+
+<script>
+    const API_URL = window.location.origin;
+    let toutes_les_categories = [];
+    let tous_les_produits = [];
+    let mon_panier = [];
+    let somme_totale = 0;
+    let intervalle_verification;
+
+    async function recupererDonneesDuServeur() {
+        try {
+            const reponse_cat = await fetch(`${API_URL}/categories/getAll-categories`);
+            const result_cat = await reponse_cat.json();
+            toutes_les_categories = result_cat.categories || [];
+            
+            const reponse_prod = await fetch(`${API_URL}/produits/getAll-produits`);
+            const result_prod = await reponse_prod.json();
+            tous_les_produits = result_prod.produits || [];
+            
+            dessinerLeMenuCategories();
+        } catch (erreur) {
+            console.error("Erreur serveur :", erreur);
+        }
+    }
+
+    function dessinerLeMenuCategories() {
+        const zone_navigation = document.getElementById('cats');
+        zone_navigation.innerHTML = '';
+        toutes_les_categories.forEach(une_categorie => {
+            const bouton = document.createElement('div');
+            bouton.className = 'cat';
+            bouton.textContent = une_categorie.name;
+            bouton.onclick = () => changerDeCategorie(une_categorie._id, bouton);
+            zone_navigation.appendChild(bouton);
+        });
+        if (toutes_les_categories.length > 0) {
+            changerDeCategorie(toutes_les_categories[0]._id, zone_navigation.firstChild);
+        }
+    }
+
+    function changerDeCategorie(id_choisi, element_clique) {
+        document.querySelectorAll('.cat').forEach(btn => btn.classList.remove('active'));
+        element_clique.classList.add('active');
+        const categorie_trouvee = toutes_les_categories.find(c => c._id === id_choisi);
+        document.getElementById('cat-name').textContent = categorie_trouvee ? categorie_trouvee.name : 'Nos Produits';
+        
+        const zone_grille = document.getElementById('grid');
+        zone_grille.innerHTML = '';
+        const produits_a_afficher = tous_les_produits.filter(p => p.categories && p.categories._id === id_choisi);
+        
+        produits_a_afficher.forEach(produit => {
+            zone_grille.innerHTML += `
+                <div class="card" onclick="ajouterArticleAuPanier('${produit.noms}', ${produit.prix})">
+                    <img src="${produit.image}">
+                    <h3>${produit.noms}</h3>
+                    <p>${produit.prix.toFixed(2)}€</p>
+                </div>`;
+        });
+    }
+
+    function ajouterArticleAuPanier(nom_article, prix_article) {
+        mon_panier.push({ nom: nom_article, prix: prix_article });
+        somme_totale += prix_article;
+        mettreAJourLePanierVisuel();
+    }
+
+    function mettreAJourLePanierVisuel() {
+        document.getElementById('list').innerHTML = mon_panier.map(article => `
+            <div class="item"><span>${article.nom}</span><b>${article.prix.toFixed(2)}€</b></div>
+        `).join('');
+        document.getElementById('total').innerText = somme_totale.toFixed(2) + "€";
+    }
+
+    function showMenu() {
+        document.getElementById('welcome').classList.add('hidden');
+        document.getElementById('main').classList.remove('hidden');
+        recupererDonneesDuServeur();
+    }
+
+    async function pay() {
+        if (somme_totale === 0) return alert("Panier vide !");
+        try {
+            const response = await fetch(`${API_URL}/paiements/payer`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ montant: somme_totale })
+            });
+
+            if (response.ok) {
+                document.getElementById('main').classList.add('hidden');
+                document.getElementById('pay-screen').classList.remove('hidden');
+                document.getElementById('pay-total').innerText = somme_totale.toFixed(2) + "€";
+                demarrerVerification();
+            }
+        } catch (err) {
+            alert("Erreur lors de la connexion au lecteur.");
+        }
+    }
+
+    function demarrerVerification() {
+        intervalle_verification = setInterval(async () => {
+            try {
+                const response = await fetch(`${API_URL}/paiements/etat`);
+                const data = await response.json();
+
+                if (data.etat === "en attente de carte") {
+                    document.getElementById('pay-instruction').innerText = "Veuillez approcher votre carte sur le lecteur";
+                } 
+                else if (data.etat === "succes") {
+                    finaliserPaiement(true);
+                } 
+                else if (data.etat === "echec") {
+                    finaliserPaiement(false);
+                }
+            } catch (err) {
+                console.error("Erreur de vérification");
+            }
+        }, 2000);
+    }
+
+    function finaliserPaiement(succes) {
+        clearInterval(intervalle_verification);
+        const icone = document.getElementById('pay-icon');
+        const titre = document.getElementById('pay-title');
+        const instruction = document.getElementById('pay-instruction');
+        const boutonAnnuler = document.getElementById('cancel-area');
+
+        icone.classList.remove('anim-pulse');
+        boutonAnnuler.classList.add('hidden');
+
+        if (succes) {
+            icone.src = "https://cdn-icons-png.flaticon.com/512/190/190411.png";
+            titre.innerText = "PAIEMENT RÉUSSI";
+            instruction.innerText = "Bon appétit ! Retour à l'accueil...";
+            instruction.className = "status-msg success-text";
+        } else {
+            icone.src = "https://cdn-icons-png.flaticon.com/512/564/564619.png";
+            titre.innerText = "PAIEMENT ÉCHOUÉ";
+            instruction.innerText = "La transaction a été refusée.";
+            instruction.className = "status-msg error-text";
+        }
+
+        setTimeout(() => { reinitialiser(); }, 4000);
+    }
+
+    function reinitialiser() {
+        clearInterval(intervalle_verification);
+        location.reload();
+    }
+</script>
+</body>
+</html>

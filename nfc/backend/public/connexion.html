@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Bank | Connexion</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* --- Styles Généraux --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f5f7fa;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+
+        .conteneur-connexion {
+            max-width: 1280px;
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: center;
+        }
+
+        .colonne-gauche {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .logo {
+            text-align: center;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .logo-icone {
+            width: 56px; height: 56px;
+            background: linear-gradient(135deg, #0066ff 0%, #0a2b5e 100%);
+            border-radius: 14px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 22px;
+            font-weight: 800;
+        }
+
+        .logo span {
+            display: block;
+            font-size: 24px;
+            font-weight: 700;
+            color: #0a2b5e;
+            margin-top: 5px;
+        }
+
+        .image-banque {
+            width: 100%;
+            max-width: 520px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .carte-formulaire {
+            background: white;
+            border-radius: 32px;
+            padding: 40px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+            border: 1px solid #eef2f6;
+        }
+
+        .entete-formulaire {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .entete-formulaire h1 { color: #0a2b5e; font-size: 28px; margin-bottom: 8px; }
+
+        .groupe-saisie { margin-bottom: 24px; position: relative; }
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 14px;
+            outline: none;
+            font-size: 15px;
+        }
+
+        input:focus { border-color: #0a2b5e; }
+
+        /* --- Zone de message (Identique à l'inscription) --- */
+        .message-serveur {
+            margin-top: 20px;
+            padding: 12px;
+            border-radius: 12px;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 500;
+            display: none;
+        }
+        .succes { background: #e6f7e6; color: #2e7d32; border: 1px solid #a5d6a7; }
+        .erreur { background: #ffebee; color: #c62828; border: 1px solid #ef9a9a; }
+
+        .bouton-connexion {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #0066ff 0%, #0a2b5e 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .lien-inscription {
+            text-align: center;
+            margin-top: 24px;
+            font-size: 14px;
+        }
+
+        .note-securite {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 28px;
+            padding-top: 20px;
+            border-top: 1px solid #f1f5f9;
+            font-size: 12px;
+            color: #8a9cb0;
+        }
+
+        @media (max-width: 880px) {
+            .conteneur-connexion { grid-template-columns: 1fr; }
+            .image-banque { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="conteneur-connexion">
+        <div class="colonne-gauche">
+            <div class="logo" onclick="window.location.href='/'">
+                <div class="logo-icone">MB</div>
+                <span>My Bank</span>
+            </div>
+            <img src="banque.jpg" alt="Banque" class="image-banque">
+        </div>
+
+        <div class="carte-formulaire">
+            <div class="entete-formulaire">
+                <h1>Connexion</h1>
+                <p>Accédez à votre espace sécurisé</p>
+            </div>
+
+            <form id="formulaireConnexion">
+                <div class="groupe-saisie">
+                    <label>Identifiant carte bancaire</label>
+                    <input type="text" id="idCarte" placeholder="Numéro de carte" required>
+                </div>
+
+                <div class="groupe-saisie">
+                    <label>Code secret (5 chiffres)</label>
+                    <input type="password" id="codeSecret" maxlength="5" placeholder="&bull;&bull;&bull;&bull;&bull;" required>
+                </div>
+
+                <button type="submit" class="bouton-connexion">
+                    Se connecter au compte
+                </button>
+
+                <div id="messageRetour" class="message-serveur"></div>
+
+                <div class="lien-inscription">
+                    Pas encore client ? <a href="/inscription" style="color: #0066ff; font-weight: 600; text-decoration: none;">Ouvrir un compte</a>
+                </div>
+
+                <div class="note-securite">
+                    <i class="fas fa-lock"></i>
+                    <span>Espace sécurisé - Cryptage SSL 256 bits</span>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = window.location.origin;
+        const form = document.getElementById('formulaireConnexion');
+        const zoneMessage = document.getElementById('messageRetour');
+
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            // Cacher le message précédent
+            zoneMessage.style.display = 'none';
+
+            const identifiant = document.getElementById('idCarte').value;
+            const code = document.getElementById('codeSecret').value;
+
+            // Validation basique côté client
+            if (identifiant.trim().length < 1) {
+                afficherMessage("Veuillez saisir votre identifiant.", "erreur");
+                return;
+            }
+
+            try {
+                const reponse = await fetch(`${API_URL}/user/login`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ 
+                        cartId: identifiant, 
+                        code_pin: code 
+                    })
+                });
+
+                const resultat = await reponse.json();
+
+                if (reponse.ok) {
+                    afficherMessage("Connexion réussie ! Redirection...", "succes");
+                    // Petite pause pour laisser l'utilisateur voir le message de succès
+                    setTimeout(() => {
+                        window.location.href = "/espace-client";
+                    }, 1500);
+                } else {
+                    // Utilise le message du serveur s'il existe, sinon message par défaut
+                    afficherMessage(resultat.message || "Identifiants incorrects.", "erreur");
+                }
+            } catch (erreur) {
+                afficherMessage("Le serveur ne répond pas. Veuillez réessayer plus tard.", "erreur");
+            }
+        });
+
+        // Fonction identique à celle de l'inscription
+        function afficherMessage(texte, type) {
+            zoneMessage.textContent = texte;
+            zoneMessage.style.display = 'block';
+            zoneMessage.className = 'message-serveur ' + type;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Bank | Ouvrir un compte</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* --- Styles de base --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f5f7fa;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+
+        .conteneur-inscription {
+            max-width: 1200px;
+            width: 100%;
+        }
+
+        /* --- En-tête / Logo --- */
+        .logo {
+            text-align: center;
+            margin-bottom: 32px;
+            cursor: pointer;
+        }
+
+        .logo-icone {
+            width: 56px; height: 56px;
+            background: linear-gradient(135deg, #0066ff 0%, #0a2b5e 100%);
+            border-radius: 14px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 22px;
+            font-weight: 800;
+        }
+
+        .logo span {
+            display: block;
+            font-size: 24px;
+            font-weight: 700;
+            color: #0a2b5e;
+            margin-top: 5px;
+        }
+
+        /* --- Mise en page --- */
+        .grille-deux-colonnes {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 48px;
+            align-items: start;
+        }
+
+        .image-banque {
+            width: 100%;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        /* --- Formulaire --- */
+        .carte-formulaire {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 6px 30px rgba(0,0,0,0.05);
+            border: 1px solid #eef2f6;
+        }
+
+        .entete-form {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .entete-form h1 { color: #0a2b5e; font-size: 26px; }
+
+        form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .ligne-pleine { grid-column: 1 / -1; }
+
+        .groupe-saisie { display: flex; flex-direction: column; }
+
+        label {
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: #1e293b;
+        }
+
+        input {
+            padding: 12px 16px;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 14px;
+            outline: none;
+        }
+
+        input:focus { border-color: #0066ff; }
+
+        /* Bouton */
+        .bouton-creer {
+            grid-column: 1 / -1;
+            padding: 14px;
+            background: linear-gradient(135deg, #0066ff 0%, #0a2b5e 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        /* Messages */
+        .message-serveur {
+            grid-column: 1 / -1;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 14px;
+            display: none;
+        }
+
+        .succes { background: #e6f7e6; color: #2e7d32; }
+        .erreur { background: #ffebee; color: #c62828; }
+
+        @media (max-width: 880px) {
+            .grille-deux-colonnes { grid-template-columns: 1fr; }
+            .image-banque { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="conteneur-inscription">
+        <div class="logo" onclick="window.location.href='/'">
+            <div class="logo-icone">MB</div>
+            <span>My Bank</span>
+        </div>
+
+        <div class="grille-deux-colonnes">
+            <div class="panneau-image">
+                <img src="banque.jpg" alt="Banque" class="image-banque">
+            </div>
+
+            <div class="carte-formulaire">
+                <div class="entete-form">
+                    <h1>Créer un compte</h1>
+                    <p style="color: #64748b;">Rejoignez-nous en quelques clics</p>
+                </div>
+
+                <form id="formulaireInscription">
+                    <div class="groupe-saisie">
+                        <label>Nom</label>
+                        <input type="text" id="nom" placeholder="KIKI" required>
+                    </div>
+                    <div class="groupe-saisie">
+                        <label>Prénom</label>
+                        <input type="text" id="prenom" placeholder=" SAGBO" required>
+                    </div>
+
+                    <div class="groupe-saisie ligne-pleine">
+                        <label>Date de naissance</label>
+                        <input type="date" id="naissance" required>
+                    </div>
+
+                    <div class="groupe-saisie ligne-pleine">
+                        <label>Email</label>
+                        <input type="email" id="email" placeholder="sagbo@gmail.com" required>
+                    </div>
+
+                    <div class="groupe-saisie ligne-pleine">
+                        <label>Numéro de carte (Identifiant)</label>
+                        <input type="text" id="idCarte" placeholder="Ex: 123456789" required>
+                    </div>
+
+                    <div class="groupe-saisie">
+                        <label>Code (5 chiffres)</label>
+                        <input type="password" id="code" maxlength="5" placeholder="&bull;&bull;&bull;&bull;&bull;" required>
+                    </div>
+                    <div class="groupe-saisie">
+                        <label>Confirmation</label>
+                        <input type="password" id="confirmCode" maxlength="5" placeholder="&bull;&bull;&bull;&bull;&bull;" required>
+                    </div>
+
+                    <button type="submit" class="bouton-creer">Finaliser l'inscription</button>
+
+                    <div id="messageRetour" class="message-serveur"></div>
+
+                    <p class="ligne-pleine" style="text-align: center; font-size: 13px; margin-top: 15px;">
+                        Déjà client ? <a href="/connexion" style="color: #0066ff; text-decoration: none; font-weight: 600;">Connectez-vous</a>
+                    </p>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = window.location.origin;
+        const formulaire = document.getElementById('formulaireInscription');
+        const zoneMessage = document.getElementById('messageRetour');
+
+        formulaire.addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            // 1. Récupération des données
+            const nom = document.getElementById('nom').value;
+            const prenom = document.getElementById('prenom').value;
+            const naissance = document.getElementById('naissance').value;
+            const email = document.getElementById('email').value;
+            const idCarte = document.getElementById('idCarte').value;
+            const code = document.getElementById('code').value;
+            const confirm = document.getElementById('confirmCode').value;
+
+            // 2. Vérification rapide des codes
+            if (code !== confirm) {
+                afficherMessage("Les codes secrets ne sont pas identiques.", "erreur");
+                return;
+            }
+
+            // 3. Préparation de l'objet pour le backend
+            const donneesUtilisateur = {
+                name: prenom,
+                surname: nom,
+                birthday: naissance,
+                email: email,
+                cartId: idCarte,
+                code_pin: code
+            };
+
+            // 4. Envoi au serveur
+            try {
+                const reponse = await fetch(`${API_URL}/user/create`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(donneesUtilisateur)
+                });
+
+                const resultat = await reponse.json();
+
+                if (reponse.ok) {
+                    afficherMessage("Compte créé avec succès ! Redirection...", "succes");
+                    setTimeout(() => { window.location.href = '/connexion'; }, 2500);
+                } else {
+                    afficherMessage(resultat.message || "Une erreur est survenue.", "erreur");
+                }
+            } catch (erreur) {
+                afficherMessage("Connexion au serveur impossible.", "erreur");
+            }
+        });
+
+        function afficherMessage(texte, type) {
+            zoneMessage.textContent = texte;
+            zoneMessage.style.display = 'block';
+            zoneMessage.className = 'message-serveur ' + type;
+        }
+    </script>
+</body>
+</html>
