@@ -7,6 +7,7 @@ const CategoriesRouter=require("./routes/categoryRoutes")
 const ProduitRouter=require("./routes/produitRoutes")
 const PayementRouter=require("./routes/payementRoute")
 const frontendRouter=require("./routes/frontendRoutes")
+const GoPresenseRouter=require("./routes/go-presence")
 const cors=require("cors")
 
 const connectDB=require("./connexion")
@@ -26,6 +27,7 @@ app.use("/categories",CategoriesRouter)
 app.use("/produits",ProduitRouter)
 app.use("/paiements",PayementRouter)
 app.use("/",frontendRouter)
+app.use("/presence",GoPresenseRouter)
 
 
 

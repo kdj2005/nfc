@@ -10,7 +10,7 @@ async function createUser(req,res){
     }
 
     try{
-        const {cartId,name,surname,email,code_pin,phone_number,birthday}=req.body
+        const {cartId,name,surname,email,code_pin,birthday}=req.body
        
     const newUser=new User({
         cartId ,
@@ -18,7 +18,7 @@ async function createUser(req,res){
         surname,
         email,
         code_pin,
-        phone_number,
+        
         birthday
     })
     await newUser.save()

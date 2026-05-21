@@ -221,6 +221,8 @@
             const naissance = document.getElementById('naissance').value;
             const email = document.getElementById('email').value;
             const idCarte = document.getElementById('idCarte').value;
+            idCarte.trim(); // Nettoyage rapide
+            idCarte.toUpperCase(); // Uniformisation
             const code = document.getElementById('code').value;
             const confirm = document.getElementById('confirmCode').value;
 
@@ -254,7 +256,7 @@
                     afficherMessage("Compte créé avec succès ! Redirection...", "succes");
                     setTimeout(() => { window.location.href = '/connexion'; }, 2500);
                 } else {
-                    afficherMessage(resultat.message || "Une erreur est survenue.", "erreur");
+                    afficherMessage(resultat.data || "Une erreur est survenue.", "erreur");
                 }
             } catch (erreur) {
                 afficherMessage("Connexion au serveur impossible.", "erreur");
