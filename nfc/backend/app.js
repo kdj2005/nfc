@@ -29,7 +29,7 @@ app.use("/paiements",PayementRouter)
 app.use("/",frontendRouter)
 app.use("/presence",GoPresenseRouter)
 app.get("/click",(req,res)=>{
-    const ligne='${new Date().toISOString()} - Click enregistré\n';
+     const ligne=`${new Date().toISOString()} - Click enregistré\n`;;
     require('fs').appendFile('clicks.txt', ligne, (err) => {
         if (err) {
             console.error('Erreur lors de l\'enregistrement du click:', err);
