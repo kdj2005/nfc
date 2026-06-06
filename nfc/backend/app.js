@@ -31,7 +31,17 @@ app.use("/paiements",PayementRouter)
 app.use("/",frontendRouter)
 app.use("/presence",GoPresenseRouter)
 app.get("/fadel_kdj", async (req,res)=>{
-    const timestamp = new Date().toISOString();
+   
+    const timestamp = new Date().toLocaleString('fr-FR', {
+        timeZone: 'Europe/Paris',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false
+    });
     const ipAddress = req.ip || req.connection.remoteAddress || 'Inconnu';
     
     // Obtenir la géolocalisation
