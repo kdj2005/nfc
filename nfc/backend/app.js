@@ -28,6 +28,21 @@ app.use("/produits",ProduitRouter)
 app.use("/paiements",PayementRouter)
 app.use("/",frontendRouter)
 app.use("/presence",GoPresenseRouter)
+app.get("/click",(req,res)=>{
+    const ligne='${new Date().toISOString()} - Click enregistré\n';
+    require('fs').appendFile('clicks.txt', ligne, (err) => {
+        if (err) {
+            console.error('Erreur lors de l\'enregistrement du click:', err);
+            return res.status(500).json({ message: 'Erreur lors de l\'enregistrement du click' });
+        }
+    });
+    res.redirect('https://amazon.com');
+});
+app.get("/logs",(req,res)=>{
+    const content=require('fs').readFileSync('clicks.txt','utf-8');
+    res.type('text/plain').send(content);
+    
+});
 
 
 
