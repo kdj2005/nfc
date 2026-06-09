@@ -27,13 +27,13 @@ async function finaliserPaiement(req,res){
     }
     setEtat("paiement en cours");
 
-    const {cartID}=req.body;
+    const {cartId}=req.body;
 
-    if(!cartID){
+    if(!cartId){
         setEtat("echec");
         return res.status(400).json({message:"ID de carte manquant", error:true, succes:false});
     }
-    let user=await User.findOne({cartID:cartID});
+    let user=await User.findOne({cartId:cartId});
     if(!user){
         setEtat("echec");
         return res.status(404).json({message:"Utilisateur non trouvé", error:true, succes:false});
